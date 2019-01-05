@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Cut Video</title>
+
+    <meta content="width=device-width,initial-scale=1.0" name="viewport">
+    <link rel="icon" type="image/png" href="./img/favicon_16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="./img/favicon_32x32.png" sizes="32x32">
+    <link rel='stylesheet' href='css/data-tooltips.css'>
+    <link rel='stylesheet' href='css/drag-and-drop.css'>
+    <link rel='stylesheet' href='css/video-cut.css'>
+    <link rel='stylesheet' href='css/footer.css'>
+    <link rel="stylesheet" href="css/style.css">
+
+    <script>
+      let ffmpegEncoder = function(encoderArgs, files) {
+        let stdout = "";
+        let stderr = "";
+        let worker = new Worker("./js/ffmpeg-worker-mp4.js");
+
+        let globalResolve;
+        let videoResolve;
+
+        this.ready = new Promise(function(resolve, reject) {
+          globalResolve = resolve;
+        });
+
+        this.videoReady = new Promise(function(resolve, reject) {
+          videoResolve = resolve;
+        });
+
+        this.run = function(files, inputParams, outputParams, outFilename) {
+          let args = ['-y']
+                    .concat((encoderArgs || []))
+                    .concat(...inputParams)
+                    .concat(['-i', files[0].name])
+                    .concat(...outputParams)
+                    .concat(outFilename);
+          const idealheap = 1024 * 1024 * 1024;
+
+          worker.postMessage({
+              type: 'run',
+              arguments: args,
+              TOTAL_MEMORY: idealheap,
+              MEMFS: files
+            });
+        };
+
+        worker.onmessage = function(e) {
+          var msg = e.data;
+          console.log(msg.type, msg.data)
+          switch (msg.type) {
+          case 'ready':
+            globalResolve();
+            break;
+          case 'stdout':
+            if(this.stderr) this.stderr(msg);
+            stdout += msg.data + '\n';
+            break;
+          case 'stderr':
+            if(this.stderr) this.stderr(msg);
+            stderr += msg.data + '\n';
+            break;
+          case 'done':
+            videoResolve(msg.data);
+            worker.terminate();
+            console.log('done');
+            break;
+          case 'exit':
+            console.log(`Process exited with code ${msg.data}`);
+            console.log(stderr);
+            console.log(stdout);
+            break;
+          }
+        }.bind(this);
+      };
+      const loadFile = function(file) {
+        return new Promise(function(resolve, reject) {
+          const fileReader = new FileReader();
+          fileReader.onload = function(e) {
+            resolve(this.result);
+          };
+          fileReader.readAsArrayBuffer(file);
+        });
+      };
+      function start(file, ffmpegOptions) {
+        const ffmpeg = new ffmpegEncoder();
+        ffmpeg.ready.then(function() {
+          // TODO: remove loading class from body
+        });
+        ffmpeg.videoReady.then(function() { // done processing video
+          // TODO: remove video processing class
+        });
+        ffmpeg.ready.then(function() { // ffmpeg is ready
+          return loadFile(file);
+        })
+        .then(function(arrayBuffer) {
+          ffmpeg.run([{name: file.name, data: arrayBuffer}],
+            [ffmpegOptions.inputParams],
+            [ffmpegOptions.outputParams],
+            ffmpegOptions.outFilename
+          );
+        });
+        ffmpeg.videoReady.then(function(data) {
+          var buffer = data.MEMFS[0].data;
+          download(new Blob( [ buffer ], { type: 'video/mp4' } ), ffmpegOptions.outFilename);
+          setTimeout(() => {
+            console.log('reloading window');
+            location.reload();
+          }, 3000);
+        });
+
+        function download(blob, outFilename) {
+          var url = window.URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          a.download = outFilename;
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+          }, 100);
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <!-- css for this full-screen div comes from css/drag-and-drop.css -->
+    <div class="drop">
+      <a href="#" class="invisible demo-video">Demo Video</a>
+      <label for="video-file" data-tooltip="Select file">+</label>
+      <input type="file" id="video-file" accept="video/*">
+    </div>
+    <!-- ^that div is swapped out for this video player which comes from html/video-editor.html -->
+    <footer>
+      <span><a class="light" href="https://github.com/zvakanaka/vidslicer#readme" target="_blank">About</a></span>
+      <span>© Copyright 2019 <a class="light" href="https://github.com/zvakanaka" target="_blank">Adam Quinton</a></span>
+    </footer>
+    <script src='js/pubsub.js'></script>
+    <script src='js/filename-parts.js'></script>
+    <script src='js/asset-add-helpers.js'></script>
+    <script src='js/video-editor.js'></script>
+
+    <script  src="js/index.js"></script>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding-bottom: .25em;
+  color: white;
+  background: black;
+  height: 2em;
+  font-family: monospace;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+footer > *:nth-child(1) {
+  padding-left: 2ch;
+}
+footer > *:last-child {
+  padding-right: 2ch;
+}
+
+footer a {
+  filter: invert(90%);
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}

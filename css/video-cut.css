@@ -1,0 +1,86 @@
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: #111;
+  color: white;
+  font-family: monospace;
+}
+
+body > * {
+  margin-top: 2em;
+}
+
+.invisible {
+  visibility: hidden;
+}
+.hidden {
+  display: none;
+}
+
+.editor {
+  max-width: 480px;
+  position: relative;
+}
+.editor > video {
+  width: 100%;
+}
+
+.player__a-button {
+  background: red;
+}
+.player__b-button {
+  background: blue;
+}
+.player__controls {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+button {
+  background: black;
+  color: white;
+  border: none;
+  outline: 1px solid white;
+  padding: 5px;
+}
+.player__pause-button {
+  max-width: 5ch;
+  min-width: 5ch;
+  letter-spacing: -2px;
+}
+
+.overlay {
+  pointer-events: none;
+  width: 5px;
+  height: 18px;
+  background: red;
+  position: relative;
+  left: 10px;
+}
+.overlay--b {
+  background: blue;
+}
+.controls-group {
+  display: flex;
+  align-items: center;
+}
+a {
+  filter: invert(90%);
+}
+
+button[disabled] {
+/*   color: grey; */
+  cursor: not-allowed;
+  background: gray;
+}
+.time__cut-button {
+  padding: 10px 20px;
+  background: aqua;
+  color: black;
+}

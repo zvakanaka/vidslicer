@@ -1,0 +1,22 @@
+a.demo-video {
+  display: block;
+  padding: 1em;
+}
+.drop:after  {
+  font-size: 200%;
+}
+[for="video-file"] {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  left: calc(50% - .25ch);
+  font-size: 400%;
+}
+#video-file {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}

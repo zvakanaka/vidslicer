@@ -1,0 +1,15 @@
+body { margin: 0; }
+.drop {
+  --drop-margin: 1ch;
+  width: calc(100vw - calc(var(--drop-margin) * 2));
+  height: calc(100vh - calc(var(--drop-margin) * 2));
+  background: #222;
+  outline: 4px dashed grey;
+  margin: var(--drop-margin);
+}
+.drop:after {
+  content: 'Drag and Drop Video';
+  color: white;
+  margin: calc(50% - 10ch);
+  font-family: monospace;
+}
