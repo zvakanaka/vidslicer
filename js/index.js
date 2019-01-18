@@ -12,16 +12,15 @@ async function swapInEditor(src = null) {
 const dropConfig = {
     pubs: [
       { sel: null /* document*/, event: 'dragover', convert: ev => ev.preventDefault(), bubbles: false },
-      { sel: '#video-input', event: 'change', topic: 'handleDroppedFile', convert: ev => ev.preventDefault(), bubbles: false },
-      { sel: null /* document*/, event: 'drop', topic: 'handleDroppedFile', convert: ev => ev.preventDefault(), bubbles: false },
+      { sel: '#video-input', event: 'change', topic: 'handleDroppedFile', convert: ev => { ev.preventDefault(); return ev; }, bubbles: false },
+      { sel: null /* document*/, event: 'drop', topic: 'handleDroppedFile', convert: ev => { ev.preventDefault(); return ev; }, bubbles: false },
       { sel: 'a.demo-video', event: 'click', topic: 'loadDemoVideo', convert: ev => ev.preventDefault(), bubbles: false }
   ],
   subs: [
     { topic: 'handleDroppedFile',
-      func: async () => {
+      func: async (_topic, ev) => {
         let dataList, dataText, dataType;
-        const target = event.dataTransfer ? event.dataTransfer : event.target;
-        console.log(event)
+        const target = ev.dataTransfer ? ev.dataTransfer : ev.target;
         fileObject = target.files[0];
         if (target.files.length === 1) { // single file
           //determine if our URL is a supported video
