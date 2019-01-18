@@ -74,6 +74,7 @@ const config = {
 
     { topic: 'cutVideo',
       func: (topic, info) => {
+        document.querySelector('.time__cut-button').disabled = true;
         const startSecond = Number(document.querySelector('.time__a-input').value);
         const endSecond = Number(document.querySelector('.time__b-input').value);
         const currentSrc = (els.player.dataset.filename) ? els.player.dataset.filename : els.player.currentSrc;
