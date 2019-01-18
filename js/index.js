@@ -1,5 +1,4 @@
 // see linked js in settings for pub/sub: pubsub.js
-console.clear();
 window.fileObject;
 async function swapInEditor(src = null) {
   document.body.innerHTML = await addHTML('./html/video-editor.html', true);

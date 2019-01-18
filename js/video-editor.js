@@ -1,5 +1,4 @@
 // see linked js in settings for pub/sub: pubsub.js
-console.clear();
 const PRECISION = 3; // precision after decimal for final cut command
 
 const els = {};
